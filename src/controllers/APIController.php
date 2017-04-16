@@ -33,6 +33,9 @@ class APIController extends AbstractController
                     'payment' => null,
                 ],
             ];
+
+            return $this->prepareResponse($response, $data)
+                        ->withStatus(404);
         } else {
             $data = [
                 'status' => true,
@@ -40,10 +43,9 @@ class APIController extends AbstractController
                     'payments' => [],
                 ],
             ];
-        }
 
-        return $this->prepareResponse($response, $data)
-                    ->withStatus(404);
+            return $this->prepareResponse($response, $data);
+        }
     }
 
 
