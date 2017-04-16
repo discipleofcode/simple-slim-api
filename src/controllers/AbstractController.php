@@ -15,6 +15,11 @@ abstract class AbstractController
 {
     protected $responseType = 'application/json';
 
+    /**
+     * @param Response $response
+     * @param $data
+     * @return Response
+     */
     public function prepareResponse(Response $response, $data) : Response
     {
         switch ($this->responseType)

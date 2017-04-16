@@ -61,7 +61,7 @@ class APIController extends AbstractController
     }
 
     /**
-     * It's just a dummy function right now for showing something at [POST] /payments/{id} endpoint
+     * It's just a dummy function right now for showing something at [POST] /payments endpoint
      *
      * @param Request $request
      * @param Response $response
