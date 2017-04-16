@@ -13,6 +13,10 @@ use Slim\Http\Response;
  */
 class APIController extends AbstractController
 {
+    /**
+     * APIController constructor.
+     * @param string $responseType
+     */
     public function __construct($responseType = '')
     {
         if ($responseType)
@@ -21,7 +25,15 @@ class APIController extends AbstractController
         }
     }
 
-    public function getPayments(Request $request, Response $response, $args)
+    /**
+     * It's just a dummy function right now for showing something at [GET] /payments and /payments/{id} endpoint
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function getPayments(Request $request, Response $response, $args) : Response
     {
         if (isset($args['id']))
         {
@@ -48,5 +60,72 @@ class APIController extends AbstractController
         }
     }
 
+    /**
+     * It's just a dummy function right now for showing something at [POST] /payments/{id} endpoint
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function addPayment(Request $request, Response $response, $args)
+    {
+        $data = [
+            'status' => false,
+            'data' => [
+                'code' => '404',
+                'message' => 'Payment not found',
+                'payment' => null,
+            ],
+        ];
 
+        return $this->prepareResponse($response, $data)
+                    ->withStatus(404);
+    }
+
+    /**
+     * It's just a dummy function right now for showing something at [PUT] /payments/{id} endpoint
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function updatePayment(Request $request, Response $response, $args)
+    {
+        $data = [
+            'status' => false,
+            'data' => [
+                'code' => '404',
+                'message' => 'Payment not found',
+                'payment' => null,
+            ],
+        ];
+
+        return $this->prepareResponse($response, $data)
+            ->withStatus(404);
+    }
+
+    /**
+     * It's just a dummy function right now for showing something at [DELETE] /payments/{id} endpoint
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function deletePayment(Request $request, Response $response, $args)
+    {
+        $data = [
+            'status' => false,
+            'data' => [
+                'code' => '404',
+                'message' => 'Payment not found',
+                'payment' => null,
+            ],
+        ];
+
+        return $this->prepareResponse($response, $data)
+            ->withStatus(404);
+    }
 }
