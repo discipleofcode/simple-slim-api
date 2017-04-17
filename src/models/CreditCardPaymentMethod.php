@@ -25,6 +25,13 @@ class CreditCardPaymentMethod implements PaymentMethodInterface
 
     private $email;
 
+    static $validateFields = [
+        'CVV2' => ['required', 'isCVV2LengthValid', 'isNumber'],
+        'number' => ['required', 'isCreditCardNumberValid'],
+        'email' => ['required', 'isEmailValid'],
+        'expirationDate' => ['required', 'isExpirationDateValid']
+    ];
+
     /**
      * @return String
      */

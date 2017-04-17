@@ -13,7 +13,12 @@ use src\interfaces\PaymentMethodInterface;
 class MobilePaymentMethod implements PaymentMethodInterface
 {
     const TYPE = 'mobile';
+
     private $mobileNumber;
+
+    static $validateFields = [
+        'mobileNumber' => ['required', 'isPhoneNumberValid'],
+    ];
 
     /**
      * @return string

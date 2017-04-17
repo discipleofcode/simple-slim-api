@@ -4,10 +4,6 @@ use src\controllers\APIController;
 
 // Routes
 
-$app->get('/api', function () use ($app) {
-    echo 'test';
-});
-
 /**
  * API group
  */

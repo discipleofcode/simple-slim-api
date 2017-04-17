@@ -10,7 +10,7 @@ namespace src\helpers;
 
 class XMLHelper
 {
-    public static function arrayToXml(Array $array, \SimpleXMLElement &$xml)
+    public static function arrayToXml(array $array, \SimpleXMLElement &$xml)
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -33,5 +33,16 @@ class XMLHelper
                 }
             }
         }
+    }
+
+    public static function xml2array ($xmlObject)
+    {
+        $newArray = [];
+
+        foreach ((array)$xmlObject as $index => $node ) {
+            $newArray[$index] = ( is_object ( $node ) ) ? self::xml2array ( $node ) : $node;
+        }
+
+        return $newArray;
     }
 }
