@@ -64,7 +64,7 @@ class APIController extends AbstractController
     }
 
     /**
-     * It's just a dummy function right now for showing something at [POST] /payments endpoint
+     * main function of this project - it's validating and creating payment object - it's not saving it though
      *
      * @param Request $request
      * @param Response $response
