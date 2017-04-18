@@ -18,13 +18,13 @@ trait SimpleArrayConvertible
         'hideSimpleArrayFields',
     ];
 
-    function toSimpleArray()
+    function toSimpleArray($hideFields = [])
     {
         $reflectionClass = new ReflectionClass(get_class($this));
 
         $simpleArray = [];
         foreach ($reflectionClass->getProperties() as $property) {
-            if (!in_array($property->getName(), $this->hideSimpleArrayFields))
+            if (!in_array($property->getName(), array_merge($hideFields, $this->hideSimpleArrayFields)))
             {
                 $property->setAccessible(true);
                 $simpleArray[$property->getName()] = $property->getValue($this);
@@ -33,10 +33,5 @@ trait SimpleArrayConvertible
         }
 
         return $simpleArray;
-    }
-
-    function kupa()
-    {
-        return 'kupa';
     }
 }
