@@ -9,9 +9,12 @@
 namespace src\models;
 
 use src\interfaces\PaymentMethodInterface;
+use src\traits\SimpleArrayConvertible;
 
 class MobilePaymentMethod implements PaymentMethodInterface
 {
+    use SimpleArrayConvertible;
+
     const TYPE = 'mobile';
 
     private $mobileNumber;
@@ -19,6 +22,20 @@ class MobilePaymentMethod implements PaymentMethodInterface
     static $validateFields = [
         'mobileNumber' => ['required', 'isPhoneNumberValid'],
     ];
+
+    static $allowedFields = [
+        'mobileNumber',
+    ];
+
+    public function __construct($params = [])
+    {
+        foreach ($params as $name => $param) {
+            if (in_array($name, self::$allowedFields)) {
+                $methodName = 'set' . ucfirst($name);
+                $this->$methodName($param);
+            }
+        }
+    }
 
     /**
      * @return string

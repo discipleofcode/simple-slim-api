@@ -9,9 +9,12 @@
 namespace src\models;
 
 use src\interfaces\PaymentMethodInterface;
+use src\traits\SimpleArrayConvertible;
 
 class CreditCardPaymentMethod implements PaymentMethodInterface
 {
+    use SimpleArrayConvertible;
+
     const TYPE = 'creditCard';
 
     /*
@@ -31,6 +34,23 @@ class CreditCardPaymentMethod implements PaymentMethodInterface
         'email' => ['required', 'isEmailValid'],
         'expirationDate' => ['required', 'isExpirationDateValid']
     ];
+
+    static $allowedFields = [
+        'CVV2',
+        'number',
+        'email',
+        'expirationDate',
+    ];
+
+    public function __construct($params = [])
+    {
+        foreach ($params as $name => $param) {
+            if (in_array($name, self::$allowedFields)) {
+                $methodName = 'set' . ucfirst($name);
+                $this->$methodName($param);
+            }
+        }
+    }
 
     /**
      * @return String
@@ -114,5 +134,10 @@ class CreditCardPaymentMethod implements PaymentMethodInterface
         $this->email = $email;
 
         return $this;
+    }
+
+    public static function toArray()
+    {
+
     }
 }

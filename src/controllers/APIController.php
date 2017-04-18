@@ -4,9 +4,8 @@ namespace src\controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use src\helpers\ValidatorHelper;
-use src\helpers\XMLHelper;
-use src\models\PaymentMethodFactory;
+use src\helpers\UnifiedRequestHelper;
+use src\services\PaymentMethodService;
 
 /**
  * Created by PhpStorm.
@@ -16,16 +15,20 @@ use src\models\PaymentMethodFactory;
  */
 class APIController extends AbstractController
 {
+
+    private $paymentMethodService;
+
     /**
      * APIController constructor.
      * @param string $responseType
+     * @param PaymentMethodService $paymentMethodService
      */
-    public function __construct($responseType = '')
+    public function __construct($responseType = '', PaymentMethodService $paymentMethodService)
     {
-        if ($responseType)
-        {
+        if ($responseType) {
             $this->responseType = $responseType;
         }
+        $this->paymentMethodService = $paymentMethodService;
     }
 
     /**
@@ -64,7 +67,7 @@ class APIController extends AbstractController
     }
 
     /**
-     * main function of this project - it's validating and creating payment object - it's not saving it though
+     * Main function of this project - it's validating and creating payment object - it's not saving it though
      *
      * @param Request $request
      * @param Response $response
@@ -73,49 +76,20 @@ class APIController extends AbstractController
      */
     public function addPayment(Request $request, Response $response, $args)
     {
-        $validator = new ValidatorHelper();
+        $params = UnifiedRequestHelper::getMergedParams($request);
+        $paymentMethod = $this->paymentMethodService->createPaymentMethod($params);
 
-        //@TODO move it somewhere higher
-        $req = [];
-        foreach ($request->getParsedBody() as $key => $param) {
-            $req[$key] = XMLHelper::xml2array($param)[0];
-        }
-
-        $validator->validate($req, [
-            'method' => ['required', 'isPaymentMethodValid']
-        ]);
-
-        if (!count($validator->getErrors()))
+        if (!count($paymentMethod['errors']))
         {
-            $paymentMethodFactory = new PaymentMethodFactory();
-            $paymentMethod = $paymentMethodFactory->createPaymentMethod($req['method']);
+            $data = [
+                'status' => true,
+                'data' => [
+                    'message' => 'Validated and created (but not saved as we don\'t have db yet)',
+                    'payment' => $paymentMethod['object']->toSimpleArray(),
+                ],
+            ];
 
-            $validator->validate($req, $paymentMethod::$validateFields);
-
-            if (!count($validator->getErrors())) {
-                //@TODO make it more abstract
-                switch ($paymentMethod->getType())
-                {
-                    case 'mobile':
-                        $paymentMethod->setMobileNumber((string)$req['mobileNumber']);
-                        break;
-                    case 'creditCard':
-                        $paymentMethod->setCVV2((int)$req['CVV2']);
-                        $paymentMethod->setExpirationDate((string)$req['expirationDate']);
-                        $paymentMethod->setNumber((int)$req['number']);
-                        $paymentMethod->setEmail((string)$req['email']);
-                        break;
-                }
-
-                $data = [
-                    'status' => true,
-                    'data' => [
-                        'message' => 'Validated and created (but not saved)'
-                    ],
-                ];
-
-                return $this->prepareResponse($response, $data);
-            }
+            return $this->prepareResponse($response, $data);
         }
 
         $data = [
@@ -123,7 +97,7 @@ class APIController extends AbstractController
             'data' => [
                 'code' => '400',
                 'message' => 'Validation not passed',
-                'errors' => $validator->getErrors(),
+                'errors' => $paymentMethod['errors'],
                 'payment' => null,
             ],
         ];

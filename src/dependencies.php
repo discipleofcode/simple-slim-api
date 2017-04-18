@@ -1,13 +1,18 @@
 <?php
 
 use src\controllers\APIController;
+use src\services\PaymentMethodService;
 
 // DIC configuration
 
 $container = $app->getContainer();
 
+$container['paymentMethodService'] = function ($container) {
+    return new PaymentMethodService();
+};
+
 $container[APIController::class] = function ($c) {
-    return new APIController($c->get('request')->getHeader('Content-Type')[0] ?? null);
+    return new APIController($c->get('request')->getHeader('Content-Type')[0] ?? null, $c->get('paymentMethodService'));
 };
 
 // view renderer

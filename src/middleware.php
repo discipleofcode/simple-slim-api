@@ -1,4 +1,6 @@
 <?php
 // Application middleware
 
-// e.g: $app->add(new \Slim\Csrf\Guard);
+use src\middlewares\AuthTokenMiddleware;
+
+//$app->add(new AuthTokenMiddleware());

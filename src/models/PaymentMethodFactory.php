@@ -9,19 +9,29 @@
 namespace src\models;
 
 use src\interfaces\PaymentMethodFactoryInterface;
+use Exception;
 
 class PaymentMethodFactory implements PaymentMethodFactoryInterface
 {
-    public function createPaymentMethod(string $type)
+
+    /**
+     * @param string $type
+     * @param array $params
+     * @return CreditCardPaymentMethod|MobilePaymentMethod
+     * @throws Exception
+     */
+    public function createPaymentMethod(string $type, $params = [])
     {
         switch($type)
         {
             case MobilePaymentMethod::TYPE:
-                return new MobilePaymentMethod();
+                return new MobilePaymentMethod($params);
                 break;
             case CreditCardPaymentMethod::TYPE:
-                return new CreditCardPaymentMethod();
+                return new CreditCardPaymentMethod($params);
                 break;
         }
+
+        throw new Exception('Payment method type not supported');
     }
 }
