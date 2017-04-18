@@ -9,6 +9,12 @@ return [
             'template_path' => __DIR__ . '/../templates/',
         ],
 
+        'auth' => [
+            'key' => 'SOMEKEYFORSIGNING',
+            'secret' => 'SOMEVERYSECRETSECRET',
+            'timestampGrace' => 600,
+        ],
+
         // Monolog settings
         'logger' => [
             'name' => 'slim-app',

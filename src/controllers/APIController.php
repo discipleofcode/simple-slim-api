@@ -20,14 +20,10 @@ class APIController extends AbstractController
 
     /**
      * APIController constructor.
-     * @param string $responseType
      * @param PaymentMethodService $paymentMethodService
      */
-    public function __construct($responseType = '', PaymentMethodService $paymentMethodService)
+    public function __construct(PaymentMethodService $paymentMethodService)
     {
-        if ($responseType) {
-            $this->responseType = $responseType;
-        }
         $this->paymentMethodService = $paymentMethodService;
     }
 
@@ -52,7 +48,7 @@ class APIController extends AbstractController
                 ],
             ];
 
-            return $this->prepareResponse($response, $data)
+            return $this->prepareResponse($request, $response, $data)
                         ->withStatus(404);
         } else {
             $data = [
@@ -62,7 +58,7 @@ class APIController extends AbstractController
                 ],
             ];
 
-            return $this->prepareResponse($response, $data);
+            return $this->prepareResponse($request, $response, $data);
         }
     }
 
@@ -89,7 +85,7 @@ class APIController extends AbstractController
                 ],
             ];
 
-            return $this->prepareResponse($response, $data);
+            return $this->prepareResponse($request, $response, $data);
         }
 
         $data = [
@@ -102,7 +98,7 @@ class APIController extends AbstractController
             ],
         ];
 
-        return $this->prepareResponse($response, $data)
+        return $this->prepareResponse($request, $response, $data)
                     ->withStatus(400);
     }
 
@@ -125,7 +121,7 @@ class APIController extends AbstractController
             ],
         ];
 
-        return $this->prepareResponse($response, $data)
+        return $this->prepareResponse($request, $response, $data)
             ->withStatus(404);
     }
 
@@ -148,7 +144,7 @@ class APIController extends AbstractController
             ],
         ];
 
-        return $this->prepareResponse($response, $data)
+        return $this->prepareResponse($request, $response, $data)
             ->withStatus(404);
     }
 }

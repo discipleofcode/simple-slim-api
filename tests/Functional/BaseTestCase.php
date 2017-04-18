@@ -2,10 +2,12 @@
 
 namespace Tests\Functional;
 
+use Psr\Http\Message\StreamInterface;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
+use Slim\Http\Stream;
 
 /**
  * This is an example class that shows how you could set up a method that
@@ -15,6 +17,14 @@ use Slim\Http\Environment;
  */
 class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $settings;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->settings = require __DIR__ . '/../../src/settings.php';
+    }
+
     /**
      * Use middleware when running application?
      *
@@ -30,15 +40,20 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
      * @param array|object|null $requestData the request data
      * @return \Slim\Http\Response
      */
-    public function runApp($requestMethod, $requestUri, $requestData = null)
+    public function runApp($requestMethod, $requestUri, $requestData = null, $requestBody = null, $headers = [])
     {
+
         // Create a mock environment for testing with
         $environment = Environment::mock(
             [
                 'REQUEST_METHOD' => $requestMethod,
-                'REQUEST_URI' => $requestUri
+                'REQUEST_URI' => $requestUri,
             ]
         );
+
+        foreach ($headers as $key => $header) {
+            $environment->set($key, $header);
+        }
 
         // Set up a request object based on the environment
         $request = Request::createFromEnvironment($environment);
@@ -46,6 +61,11 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         // Add request data, if it exists
         if (isset($requestData)) {
             $request = $request->withParsedBody($requestData);
+        }
+
+        if (isset($requestBody)) {
+            $request->getBody()->write($requestBody);
+            $request->reparseBody();
         }
 
         // Set up a response object

@@ -3,4 +3,4 @@
 
 use src\middlewares\AuthTokenMiddleware;
 
-//$app->add(new AuthTokenMiddleware());
+$app->add(new AuthTokenMiddleware($settings));

@@ -12,7 +12,7 @@ $container['paymentMethodService'] = function ($container) {
 };
 
 $container[APIController::class] = function ($c) {
-    return new APIController($c->get('request')->getHeader('Content-Type')[0] ?? null, $c->get('paymentMethodService'));
+    return new APIController($c->get('paymentMethodService'));
 };
 
 // view renderer

@@ -18,28 +18,43 @@ use PhilipBrown\Signature\Guards\CheckSignature;
 use PhilipBrown\Signature\Exceptions\SignatureException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use src\helpers\UnifiedRequestHelper;
 
 class AuthTokenMiddleware
 {
+    private $settings;
+
+    public function __construct($settings)
+    {
+        $this->settings = $settings;
+    }
+
     /**
      * Middleware for authorization with key and timestamp
      *
-     * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
-     * @param  \Psr\Http\Message\ResponseInterface      $response PSR7 response
-     * @param  callable                                 $next     Next middleware
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param $next
+     * @return ResponseInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next) : ResponseInterface
     {
-        $auth = new Auth($request->getMethod(), $request->getUri()->getPath(), $request->getParsedBody(), [
+        $params = UnifiedRequestHelper::getMergedParams($request);
+
+        if (!isset($params['auth_timestamp'])) {
+            return $response->withStatus(401, 'Request unauthorized. Please provide auth_timestamp');
+        }
+
+        if (!isset($params['auth_version'])) $params['auth_version'] = '5.1.2';
+
+        $auth = new Auth($request->getMethod(), $request->getUri()->getPath(), $params, [
             new CheckKey,
             new CheckVersion,
-            new CheckTimestamp,
+            new CheckTimestamp(600),
             new CheckSignature,
         ]);
 
-        $token = new Token('SOMEKEYFORSIGNING', 'SOMEVERYSECRETSECRET');
+        $token = new Token($this->settings['settings']['auth']['key'], $this->settings['settings']['auth']['secret']);
 
         try
         {
@@ -47,7 +62,7 @@ class AuthTokenMiddleware
         }
         catch (SignatureException $e)
         {
-            return $response->withStatus(401);
+            return $response->withStatus(401, 'Request unauthorized. Please provide auth_timestamp, auth_key and auth_signature (hash)');
         }
 
         return $next($request, $response);

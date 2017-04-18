@@ -8,6 +8,7 @@
 
 namespace src\helpers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 
 class UnifiedRequestHelper
@@ -15,10 +16,10 @@ class UnifiedRequestHelper
     /**
      * Method for merging request params with parsed body params (json, xml)
      *
-     * @param Request $request
+     * @param Request | ServerRequestInterface $request
      * @return array
      */
-    public static function getMergedParams(Request $request) : array
+    public static function getMergedParams($request) : array
     {
         switch ($request->getHeader('Content-Type')) {
             case 'application/xml':
